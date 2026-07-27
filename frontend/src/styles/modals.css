@@ -1,0 +1,48 @@
+.modal-overlay{position:fixed; inset:0; z-index:900; background:rgba(23,19,49,.55); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:20px;}
+.modal-box{
+  background:#fff; border-radius:28px; width:100%; max-width:620px; max-height:90vh; overflow-y:auto;
+  box-shadow:var(--shadow-lg); position:relative; animation:modalIn .35s cubic-bezier(.16,1,.3,1);
+}
+@keyframes modalIn{from{transform:scale(.92) translateY(20px); opacity:0;} to{transform:scale(1) translateY(0); opacity:1;}}
+.modal-close{position:absolute; top:20px; right:20px; z-index:5; width:38px;height:38px; border-radius:50%; background:var(--bg-soft); border:none; display:flex; align-items:center;justify-content:center; color:var(--ink); transition:.25s;}
+.modal-close:hover{background:var(--gray-200); transform:rotate(90deg);}
+.auth-tab.active{background:#fff !important; color:var(--indigo-600) !important; box-shadow:var(--shadow-sm);}
+.modal-hero{height:170px; position:relative; border-radius:28px 28px 0 0; overflow:hidden;}
+.modal-hero img{width:100%;height:100%;object-fit:cover;}
+.modal-hero::after{content:''; position:absolute; inset:0; background:linear-gradient(180deg, rgba(23,19,49,.1), rgba(23,19,49,.75));}
+.modal-hero-text{position:absolute; bottom:16px; left:26px; right:60px; color:#fff; z-index:2;}
+.modal-hero-text h3{font-size:21px;}
+.modal-hero-text span{font-size:13px; opacity:.85; font-weight:600;}
+.modal-body{padding:28px;}
+.steps-row{display:flex; align-items:center; gap:8px; margin-bottom:26px;}
+.step-dot{width:30px;height:30px;border-radius:50%; background:var(--gray-100); color:var(--gray-500); display:flex; align-items:center;justify-content:center; font-weight:700; font-size:13px; font-family:var(--ff-data); transition:.3s;}
+.step-dot.active{background:var(--grad-1); color:#fff;}
+.step-dot.done{background:var(--ink); color:#fff;}
+.step-line{flex:1; height:2px; background:var(--gray-100);}
+.modal-step.active{animation:fadeStep .4s;}
+@keyframes fadeStep{from{opacity:0; transform:translateX(8px);} to{opacity:1; transform:translateX(0);}}
+
+.ticket-type{display:flex; align-items:center; justify-content:space-between; padding:18px 20px; border-radius:16px; border:1.6px solid var(--gray-200); margin-bottom:12px; cursor:pointer; transition:.25s;}
+.ticket-type:hover{border-color:var(--violet-light);}
+.ticket-type.selected{border-color:var(--indigo); background:var(--bg-soft);}
+.ticket-type h5{font-size:15px; font-weight:700;}
+.ticket-type p{font-size:12.5px; color:var(--gray-500); margin-top:3px;}
+.ticket-type .tt-price{font-family:var(--ff-data); font-weight:700; font-size:16px; white-space:nowrap;}
+
+.qty-row{display:flex; align-items:center; justify-content:space-between; margin-top:24px; padding-top:22px; border-top:1.5px dashed var(--gray-200);}
+.qty-control{display:flex; align-items:center; gap:14px;}
+.qty-btn{width:36px;height:36px;border-radius:50%; border:1.5px solid var(--gray-200); background:#fff; display:flex; align-items:center;justify-content:center; transition:.2s;}
+.qty-btn:hover{border-color:var(--indigo); color:var(--indigo);}
+.qty-val{font-family:var(--ff-data); font-weight:700; font-size:18px; min-width:24px; text-align:center;}
+.total-row{display:flex; justify-content:space-between; align-items:baseline; margin-top:22px; padding-top:18px; border-top:1.5px solid var(--gray-100);}
+.total-row strong{font-size:26px; font-family:var(--ff-data);}
+
+.modal-actions{display:flex; gap:12px; margin-top:28px;}
+.modal-actions .btn{flex:1;}
+
+.success-wrap{text-align:center; padding:10px 0;}
+.success-check{width:90px;height:90px;border-radius:50%; background:var(--grad-1); display:flex; align-items:center;justify-content:center; margin:0 auto 24px; box-shadow:var(--shadow-glow);}
+.success-wrap h3{font-size:25px; margin-bottom:10px;}
+.success-wrap p{color:var(--gray-600); font-size:14.5px; max-width:380px; margin:0 auto;}
+.confetti-piece{position:absolute; top:-10px; border-radius:3px; animation:confettiFall 2.6s ease-in forwards; z-index:1;}
+@keyframes confettiFall{to{transform:translateY(420px) rotate(540deg); opacity:0;}}
