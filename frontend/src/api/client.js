@@ -2,7 +2,7 @@ import { MOCK_EVENTS, MOCK_TESTIMONIALS, MOCK_STATS } from './mockData';
 
 export const API_BASE = import.meta.env.VITE_API_BASE || 'https://eventora-je8w.onrender.com/api';
 
-const DEFAULT_TIMEOUT_MS = 2500;
+const DEFAULT_TIMEOUT_MS = 10000;
 const TOKEN_KEY = 'eh_token';
 
 export function getToken() {
@@ -14,7 +14,7 @@ export function setToken(token) {
 }
 
 /**
- * Handles mock responses when the backend server is offline or unreachable.
+ * Handles mock responses ONLY when the backend server is completely offline / unreachable.
  */
 function handleMockFallback(path, options) {
   const method = (options.method || 'GET').toUpperCase();
@@ -40,7 +40,7 @@ function handleMockFallback(path, options) {
     return { token: 'demo_jwt_token_user', user: { id: 99, name: body.name || 'User', email: body.email || 'user@eventora.in', role: 'USER' } };
   }
 
-  // Events list - Always returns fresh MOCK_EVENTS + any user-created events
+  // Events list
   if (path.includes('/events')) {
     if (method === 'POST') {
       let body = {};
@@ -113,24 +113,28 @@ export async function apiFetch(path, options = {}) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), options.timeoutMs || DEFAULT_TIMEOUT_MS);
 
+  let res;
   try {
-    const res = await fetch(`${API_BASE}${path}`, { ...options, headers, signal: controller.signal });
+    res = await fetch(`${API_BASE}${path}`, { ...options, headers, signal: controller.signal });
+  } catch (netErr) {
     clearTimeout(timeoutId);
-
-    if (res.status === 204) return null;
-    let body = null;
-    try { body = await res.json(); } catch {}
-
-    if (!res.ok) {
-      const msg = (body && (body.message || Object.values(body)[0])) || `Request failed (${res.status})`;
-      throw new Error(msg);
-    }
-    return body;
-  } catch (err) {
-    clearTimeout(timeoutId);
-    // If backend is unreachable or timed out, fallback to instant mock responses
+    // Network / connection error (e.g. backend server offline) -> fallback to local mock
     return handleMockFallback(path, options);
+  } finally {
+    clearTimeout(timeoutId);
   }
+
+  if (res.status === 204) return null;
+
+  let body = null;
+  try { body = await res.json(); } catch {}
+
+  if (!res.ok) {
+    const msg = (body && (body.message || Object.values(body)[0])) || `Request failed (${res.status})`;
+    throw new Error(msg);
+  }
+
+  return body;
 }
 
 export const api = {
