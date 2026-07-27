@@ -23,21 +23,45 @@ function handleMockFallback(path, options) {
   // Auth me
   if (path.includes('/auth/me')) {
     if (!token) return null;
-    return { id: 1, name: 'Swapna KY', email: 'swapna@eventora.in', role: 'ADMIN' };
+    const storedUser = localStorage.getItem('eh_mock_user');
+    if (storedUser) {
+      try { return JSON.parse(storedUser); } catch {}
+    }
+    if (token === 'demo_jwt_token_admin') {
+      return { id: 1, name: 'Swapna KY', email: 'swapna@eventora.in', role: 'ADMIN' };
+    }
+    return null;
   }
 
   // Auth login
   if (path.includes('/auth/login')) {
-    setToken('demo_jwt_token_swapna_ky');
-    return { token: 'demo_jwt_token_swapna_ky', user: { id: 1, name: 'Swapna KY', email: 'swapna@eventora.in', role: 'ADMIN' } };
+    let body = {};
+    try { body = JSON.parse(options.body); } catch {}
+    const isAdmin = body.email === 'swapna@eventora.in';
+    const loggedUser = {
+      id: isAdmin ? 1 : Date.now(),
+      name: isAdmin ? 'Swapna KY' : (body.email ? body.email.split('@')[0] : 'User'),
+      email: body.email || 'user@eventora.in',
+      role: isAdmin ? 'ADMIN' : 'USER',
+    };
+    setToken('demo_jwt_token_' + (isAdmin ? 'admin' : 'user'));
+    localStorage.setItem('eh_mock_user', JSON.stringify(loggedUser));
+    return { token: 'demo_jwt_token_' + (isAdmin ? 'admin' : 'user'), ...loggedUser };
   }
 
   // Auth register
   if (path.includes('/auth/register')) {
     let body = {};
     try { body = JSON.parse(options.body); } catch {}
+    const regUser = {
+      id: Date.now(),
+      name: body.name || 'New User',
+      email: body.email || 'user@eventora.in',
+      role: 'USER',
+    };
     setToken('demo_jwt_token_user');
-    return { token: 'demo_jwt_token_user', user: { id: 99, name: body.name || 'User', email: body.email || 'user@eventora.in', role: 'USER' } };
+    localStorage.setItem('eh_mock_user', JSON.stringify(regUser));
+    return { token: 'demo_jwt_token_user', ...regUser };
   }
 
   // Events list
