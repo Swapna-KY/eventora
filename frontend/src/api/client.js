@@ -106,6 +106,14 @@ function handleMockFallback(path, options) {
 }
 
 export async function apiFetch(path, options = {}) {
+  const isVercelHost = typeof window !== 'undefined' && window.location.hostname.includes('vercel.app');
+  const hasCustomApi = !!import.meta.env.VITE_API_BASE;
+
+  // On Vercel without custom backend env, use instant mock responses
+  if (isVercelHost && !hasCustomApi) {
+    return handleMockFallback(path, options);
+  }
+
   const token = getToken();
   const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
   if (token) headers['Authorization'] = `Bearer ${token}`;
