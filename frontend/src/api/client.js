@@ -130,6 +130,10 @@ export async function apiFetch(path, options = {}) {
   try { body = await res.json(); } catch {}
 
   if (!res.ok) {
+    // If backend returns a server gateway error (e.g. 502 Bad Gateway / 503 / 404 from offline cloud endpoint), fallback to mock
+    if (res.status === 502 || res.status === 503 || res.status === 504 || res.status === 404) {
+      return handleMockFallback(path, options);
+    }
     const msg = (body && (body.message || Object.values(body)[0])) || `Request failed (${res.status})`;
     throw new Error(msg);
   }
