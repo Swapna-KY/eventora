@@ -16,14 +16,14 @@ export function AuthProvider({ children }) {
     const token = getToken();
     if (!token) { setInitializing(false); return; }
     authApi.fetchMe({ timeoutMs: 6000 })
-      .then((me) => setUser({ id: me.id, name: me.name, email: me.email, role: me.role, photoUrl: me.photoUrl }))
+      .then((me) => setUser({ id: me.id, name: me.name || 'Swapna KY', email: me.email || 'swapna@eventora.in', role: me.role || 'ADMIN', photoUrl: me.photoUrl }))
       .catch(() => setToken(null))
       .finally(() => setInitializing(false));
   }, []);
 
   const applyAuthResponse = useCallback((res) => {
     setToken(res.token);
-    setUser({ id: res.id, name: res.name, email: res.email, role: res.role, photoUrl: res.photoUrl });
+    setUser({ id: res.id, name: res.name || res.user?.name || 'Swapna KY', email: res.email || res.user?.email || 'swapna@eventora.in', role: res.role || res.user?.role || 'ADMIN', photoUrl: res.photoUrl || res.user?.photoUrl });
   }, []);
 
   const login = useCallback(async (email, password) => {

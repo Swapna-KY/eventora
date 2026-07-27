@@ -15,13 +15,13 @@ export default function Avatar({ name, photoUrl, size = 42, onClick, className =
     );
   }
 
-  const letter = (name || '?').trim().charAt(0).toUpperCase();
+  const letter = (name && name.trim() ? name.trim().charAt(0) : 'S').toUpperCase();
   return (
     <div
       onClick={onClick}
       className={`avatar-initial ${className}`}
       style={{ ...commonStyle, fontSize: size * 0.42 }}
-      aria-label={name}
+      aria-label={name || 'Profile'}
     >
       {letter}
     </div>
