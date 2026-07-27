@@ -219,7 +219,7 @@ export default function BookingModal() {
               </div>
               <div className="modal-actions">
                 <button className="btn btn-ghost" onClick={handleClose}>Close</button>
-                <button className="btn btn-primary" onClick={() => { handleClose(); goTo('dashboard'); }}>
+                <button className="btn btn-primary" onClick={() => { handleClose(); goToPanel('bookings'); }}>
                   View My Bookings
                 </button>
               </div>

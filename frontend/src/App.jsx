@@ -30,7 +30,19 @@ export default function App() {
       {view === 'eventDetails' && <EventDetailsPage />}
 
       {showDashboardLoading && <PageSpinner />}
-      {!initializing && view === 'dashboard' && user && <UserDashboard />}
+      {!initializing && view === 'dashboard' && (
+        user ? <UserDashboard /> : (
+          <main style={{ paddingTop: 120, paddingBottom: 80, textAlign: 'center' }}>
+            <div className="container" style={{ maxWidth: 500 }}>
+              <h2>Log in to view your Dashboard</h2>
+              <p style={{ color: 'var(--gray-500)', margin: '16px 0 24px' }}>
+                Your bookings, saved events, and ticket history are stored in your account.
+              </p>
+              <AuthModal />
+            </div>
+          </main>
+        )
+      )}
       {!initializing && view === 'admin' && user?.role === 'ADMIN' && <AdminDashboard />}
 
       <AuthModal />

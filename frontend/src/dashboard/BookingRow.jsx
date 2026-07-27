@@ -33,8 +33,9 @@ export default function BookingRow({ booking, variant = 'full' }) {
     }
   };
 
-  const isPastEvent = new Date(booking.eventDate).getTime() < Date.now();
-  const actualStatus = (booking.status === 'confirmed' && isPastEvent) ? 'past' : booking.status;
+  const statusLower = (booking.status || 'confirmed').toLowerCase();
+  const isPastEvent = booking.eventDate ? new Date(booking.eventDate).getTime() < Date.now() : false;
+  const actualStatus = (statusLower === 'confirmed' && isPastEvent) ? 'past' : statusLower;
 
   const statusClass = actualStatus === 'confirmed' ? 'confirmed'
     : actualStatus === 'past' ? 'past'
