@@ -89,19 +89,6 @@ npm install
 npm run dev
 ```
 > The application will open locally at `http://localhost:5173`.
-<<<<<<< HEAD
----
-
 ## 📄 License & Credits
-
-=======
-
----
-
-
-
-## 📄 License & Credits
-
->>>>>>> 1248cb4 (Connect frontend to live Render backend API)
 - Developed by **Swapna KY**
 - Designed for seamless event ticketing and management.
