@@ -20,28 +20,25 @@ function handleMockFallback(path, options) {
   const method = (options.method || 'GET').toUpperCase();
   const token = getToken();
 
-  // Auth me
-  if (path.includes('/auth/me')) {
+  // Fetch current user (used by AuthContext on page load)
+  if (path.includes('/users/me')) {
     if (!token) return null;
     const storedUser = localStorage.getItem('eh_mock_user');
     if (storedUser) {
       try { return JSON.parse(storedUser); } catch {}
     }
-    if (token === 'demo_jwt_token_admin') {
-      return { id: 1, name: 'Swapna KY', email: 'swapna@eventora.in', role: 'ADMIN' };
-    }
     return null;
   }
 
-  // Auth login
+  // Auth login — any credentials work in demo mode
   if (path.includes('/auth/login')) {
     let body = {};
     try { body = JSON.parse(options.body); } catch {}
     const isAdmin = body.email === 'swapna@eventora.in';
     const loggedUser = {
       id: isAdmin ? 1 : Date.now(),
-      name: isAdmin ? 'Swapna KY' : (body.email ? body.email.split('@')[0] : 'User'),
-      email: body.email || 'user@eventora.in',
+      name: isAdmin ? 'Swapna KY' : (body.email ? body.email.split('@')[0] : 'Demo User'),
+      email: body.email || 'demo@eventora.in',
       role: isAdmin ? 'ADMIN' : 'USER',
     };
     setToken('demo_jwt_token_' + (isAdmin ? 'admin' : 'user'));
