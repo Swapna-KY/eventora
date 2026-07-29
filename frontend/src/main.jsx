@@ -8,10 +8,15 @@ import { ToastProvider } from './context/ToastContext.jsx'
 import { ModalProvider } from './context/ModalContext.jsx'
 import { NavigationProvider } from './context/NavigationContext.jsx'
 
-// Build marker: open the browser console (F12) and look for this line to confirm
-// you're running this exact build and not a stale cached/older version. If you
-// don't see this line, hard-refresh (Ctrl+Shift+R) or restart `npm run dev`.
-console.log('%cEventHub build 2026-07-05-c (request timeout + blank-page fixes)', 'color:#5b4fe8;font-weight:bold;');
+const APP_VERSION = 'eventora-v2';
+if (localStorage.getItem('eh_app_version') !== APP_VERSION) {
+  // Clear stale tokens/session from old builds
+  localStorage.removeItem('eh_token');
+  localStorage.removeItem('eh_mock_user');
+  localStorage.setItem('eh_app_version', APP_VERSION);
+}
+
+console.log('%cEventora v2 — fresh build loaded', 'color:#5b4fe8;font-weight:bold;');
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
