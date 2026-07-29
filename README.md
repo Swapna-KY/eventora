@@ -2,6 +2,12 @@
 
 **Eventora** is a modern, high-performance, full-stack web application designed for discovering, hosting, and managing events seamlessly. Built with a sleek React frontend and a robust Spring Boot backend powered by MySQL.
 
+🌐 **Live Demo:** [https://eventora-eight-gamma.vercel.app](https://eventora-eight-gamma.vercel.app)
+
+> **Demo Credentials:**
+> - Admin: `swapna@eventora.in` / any password
+> - User: sign up with any email
+
 ---
 
 ## 🌟 Key Features
