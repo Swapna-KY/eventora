@@ -1,0 +1,19 @@
+services:
+  # ─── Spring Boot Backend ─────────────────────────────────────────
+  - type: web
+    name: eventora-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3035
+      - key: DATABASE_URL
+        sync: false          # You will fill this in Render dashboard
+      - key: DATABASE_USER
+        sync: false
+      - key: DATABASE_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true  # Render auto-generates a secure random secret
