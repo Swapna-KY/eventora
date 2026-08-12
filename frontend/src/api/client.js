@@ -240,6 +240,37 @@ function handleMockFallback(path, options) {
   // Saved / Notifications
   if (path.includes('/saved') || path.includes('/notifications')) return [];
 
+  // Contact form — save message to localStorage
+  if (path.includes('/contact') && method === 'POST') {
+    let body = {};
+    try { body = JSON.parse(options.body); } catch {}
+    const msg = {
+      id: Date.now(),
+      name: body.name || 'Anonymous',
+      email: body.email || '',
+      subject: body.subject || 'No subject',
+      message: body.message || '',
+      isRead: false,
+      createdAt: new Date().toISOString(),
+    };
+    const current = JSON.parse(localStorage.getItem('eh_contact_messages') || '[]');
+    localStorage.setItem('eh_contact_messages', JSON.stringify([msg, ...current]));
+    return { success: true };
+  }
+
+  // Admin messages — list all contact messages
+  if (path.includes('/admin/messages')) {
+    if (method === 'PATCH' && path.includes('/read')) {
+      const parts = path.split('/');
+      const idStr = parts[parts.indexOf('messages') + 1];
+      const current = JSON.parse(localStorage.getItem('eh_contact_messages') || '[]');
+      const updated = current.map((m) => String(m.id) === String(idStr) ? { ...m, isRead: true } : m);
+      localStorage.setItem('eh_contact_messages', JSON.stringify(updated));
+      return updated.find((m) => String(m.id) === String(idStr)) || {};
+    }
+    return JSON.parse(localStorage.getItem('eh_contact_messages') || '[]');
+  }
+
   return [];
 }
 
