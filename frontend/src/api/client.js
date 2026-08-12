@@ -112,7 +112,33 @@ function handleMockFallback(path, options) {
     if (method === 'POST') {
       let body = {};
       try { body = JSON.parse(options.body); } catch {}
-      const newB = { bookingId: 'BK-' + Math.floor(Math.random() * 90000 + 10000), eventId: body.eventId, eventTitle: body.eventTitle || 'Event Ticket', quantity: body.ticketCount || 1, totalPrice: (body.ticketPrice || 499) * (body.ticketCount || 1), status: 'CONFIRMED', bookedAt: new Date().toISOString() };
+
+      // Look up event price from mock data
+      const TICKET_MULTIPLIERS = { GENERAL: 1, VIP: 2, GROUP: 0.8 };
+      const userAdded = JSON.parse(localStorage.getItem('eh_user_events') || '[]');
+      const allEvents = [...MOCK_EVENTS, ...userAdded];
+      const event = allEvents.find((e) => e.id == body.eventId);
+      const basePrice = event ? event.price : 499;
+      const multiplier = TICKET_MULTIPLIERS[body.ticketType] || 1;
+      const qty = body.quantity || 1;
+      const amount = basePrice * multiplier * qty;
+      const ref = 'BK-' + Math.floor(Math.random() * 90000 + 10000);
+
+      const newB = {
+        bookingReference: ref,
+        id: Date.now(),
+        eventId: body.eventId,
+        eventTitle: event ? event.title : 'Event Ticket',
+        eventImage: event ? event.imageUrl : '',
+        eventCity: event ? event.city : '',
+        eventDate: event ? event.eventDate : '',
+        quantity: qty,
+        ticketType: body.ticketType || 'GENERAL',
+        amount,
+        status: 'CONFIRMED',
+        attendeeName: body.attendeeName || 'Guest',
+        bookedAt: new Date().toISOString(),
+      };
       const current = JSON.parse(localStorage.getItem('eh_mock_bookings') || '[]');
       localStorage.setItem('eh_mock_bookings', JSON.stringify([newB, ...current]));
       return newB;
