@@ -30,35 +30,65 @@ function handleMockFallback(path, options) {
     return null;
   }
 
-  // Auth login — any credentials work in demo mode
+  // Auth login — only registered users can log in
   if (path.includes('/auth/login')) {
     let body = {};
     try { body = JSON.parse(options.body); } catch {}
-    const isAdmin = body.email === 'swapna@eventora.in';
-    const loggedUser = {
-      id: isAdmin ? 1 : Date.now(),
-      name: isAdmin ? 'Swapna KY' : (body.email ? body.email.split('@')[0] : 'Demo User'),
-      email: body.email || 'demo@eventora.in',
-      role: isAdmin ? 'ADMIN' : 'USER',
-    };
-    setToken('demo_jwt_token_' + (isAdmin ? 'admin' : 'user'));
+
+    const email = (body.email || '').trim().toLowerCase();
+    const password = body.password || '';
+
+    // Admin account is always valid
+    if (email === 'swapna@eventora.in') {
+      const adminUser = { id: 1, name: 'Swapna KY', email: 'swapna@eventora.in', role: 'ADMIN' };
+      setToken('demo_jwt_token_admin');
+      localStorage.setItem('eh_mock_user', JSON.stringify(adminUser));
+      return { token: 'demo_jwt_token_admin', ...adminUser };
+    }
+
+    // Check if email is registered
+    const registered = JSON.parse(localStorage.getItem('eh_registered_users') || '[]');
+    const found = registered.find((u) => u.email.toLowerCase() === email);
+    if (!found) {
+      throw new Error('No account found with this email. Please sign up first.');
+    }
+
+    // Check password
+    if (found.password && found.password !== password) {
+      throw new Error('Incorrect password. Please try again.');
+    }
+
+    const loggedUser = { id: found.id, name: found.name, email: found.email, role: found.role || 'USER' };
+    setToken('demo_jwt_token_user');
     localStorage.setItem('eh_mock_user', JSON.stringify(loggedUser));
-    return { token: 'demo_jwt_token_' + (isAdmin ? 'admin' : 'user'), ...loggedUser };
+    return { token: 'demo_jwt_token_user', ...loggedUser };
   }
 
-  // Auth register
+  // Auth register — save user so they can log in later
   if (path.includes('/auth/register')) {
     let body = {};
     try { body = JSON.parse(options.body); } catch {}
-    const regUser = {
+
+    const email = (body.email || '').trim().toLowerCase();
+    const registered = JSON.parse(localStorage.getItem('eh_registered_users') || '[]');
+
+    // Check if already registered
+    if (registered.find((u) => u.email.toLowerCase() === email)) {
+      throw new Error('An account with this email already exists. Please log in.');
+    }
+
+    const newUser = {
       id: Date.now(),
       name: body.name || 'New User',
       email: body.email || 'user@eventora.in',
+      password: body.password || '',
       role: 'USER',
     };
+    localStorage.setItem('eh_registered_users', JSON.stringify([...registered, newUser]));
     setToken('demo_jwt_token_user');
-    localStorage.setItem('eh_mock_user', JSON.stringify(regUser));
-    return { token: 'demo_jwt_token_user', ...regUser };
+    const safeUser = { id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role };
+    localStorage.setItem('eh_mock_user', JSON.stringify(safeUser));
+    return { token: 'demo_jwt_token_user', ...safeUser };
   }
 
   // Events list
