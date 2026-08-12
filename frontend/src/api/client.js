@@ -146,6 +146,48 @@ function handleMockFallback(path, options) {
     return JSON.parse(localStorage.getItem('eh_mock_bookings') || '[]');
   }
 
+  // Admin analytics
+  if (path.includes('/admin/analytics')) {
+    const bookings = JSON.parse(localStorage.getItem('eh_mock_bookings') || '[]');
+    const totalRevenue = bookings.reduce((sum, b) => sum + (b.amount || 0), 0);
+    const totalTicketsSold = bookings.reduce((sum, b) => sum + (b.quantity || 0), 0);
+    const userAdded = JSON.parse(localStorage.getItem('eh_user_events') || '[]');
+    const activeEvents = MOCK_EVENTS.length + userAdded.length;
+    const conversionRate = activeEvents > 0 ? Math.min(((totalTicketsSold / (activeEvents * 50)) * 100).toFixed(1), 99) : 4.2;
+
+    // Build last-7-days bookings (count per day)
+    const now = Date.now();
+    const bookingsLast7Days = Array.from({ length: 7 }, (_, i) => {
+      const dayStart = now - (6 - i) * 86400000;
+      const dayEnd = dayStart + 86400000;
+      return bookings.filter((b) => { const t = new Date(b.bookedAt).getTime(); return t >= dayStart && t < dayEnd; }).length;
+    });
+
+    // Seats by category
+    const seatsByCategory = {};
+    bookings.forEach((b) => {
+      const allEvents = [...MOCK_EVENTS, ...userAdded];
+      const ev = allEvents.find((e) => e.id == b.eventId);
+      const cat = ev ? ev.category : 'Other';
+      seatsByCategory[cat] = (seatsByCategory[cat] || 0) + (b.quantity || 0);
+    });
+    // Seed with mock data if no bookings yet
+    if (!bookings.length) {
+      ['Technology', 'Music', 'Business', 'Comedy', 'Art & Culture', 'Sports'].forEach((c, i) => {
+        seatsByCategory[c] = [1200, 980, 650, 820, 430, 770][i];
+      });
+    }
+
+    return {
+      totalRevenue: totalRevenue || 892450,
+      totalTicketsSold: totalTicketsSold || 4850,
+      activeEvents,
+      conversionRate: Number(conversionRate) || 4.2,
+      bookingsLast7Days: bookingsLast7Days.some(Boolean) ? bookingsLast7Days : [12, 19, 8, 24, 31, 18, 27],
+      seatsByCategory,
+    };
+  }
+
   // Saved / Notifications
   if (path.includes('/saved') || path.includes('/notifications')) return [];
 
