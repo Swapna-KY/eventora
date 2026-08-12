@@ -143,6 +143,25 @@ function handleMockFallback(path, options) {
       localStorage.setItem('eh_mock_bookings', JSON.stringify([newB, ...current]));
       return newB;
     }
+
+    // Cancel booking: PATCH /bookings/{id}/cancel
+    if (method === 'PATCH' && path.includes('/cancel')) {
+      const parts = path.split('/');
+      const idStr = parts[parts.indexOf('bookings') + 1];
+      const current = JSON.parse(localStorage.getItem('eh_mock_bookings') || '[]');
+      let cancelled = null;
+      const updated = current.map((b) => {
+        if (String(b.id) === String(idStr) || b.bookingReference === idStr) {
+          cancelled = { ...b, status: 'CANCELLED' };
+          return cancelled;
+        }
+        return b;
+      });
+      localStorage.setItem('eh_mock_bookings', JSON.stringify(updated));
+      return cancelled || { status: 'CANCELLED' };
+    }
+
+    // My bookings: GET /bookings/my
     return JSON.parse(localStorage.getItem('eh_mock_bookings') || '[]');
   }
 
