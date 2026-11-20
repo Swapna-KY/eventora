@@ -29,7 +29,7 @@
 | **Frontend** | React 18, Vite, Vanilla CSS (Design Tokens, Grid & Flexbox) |
 | **Backend** | Java 21, Spring Boot 3.2.5, Spring Data JPA, RESTful APIs |
 | **Database** | MySQL Server 8.0 |
-| **Authentication** | Custom Session/Token Auth with role-based access (USER / ADMIN) |
+| **Authentication** | JWT Authentication with role-based access (USER / ADMIN) |
 
 ---
 
